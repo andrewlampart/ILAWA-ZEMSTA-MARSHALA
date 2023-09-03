@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IŁAWA: ZEMSTA MARSHALA v1.3</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="title">IŁAWA: ZEMSTA MARSHALA</div>
+
+    <div class="center-content flex-column">
+        <button onclick="createRoom()">Utwórz pokój</button>
+        <input type="text" id="roomInput" placeholder="Wprowadź ID pokoju">
+        <button onclick="joinRoom(document.getElementById('roomInput').value)">Dołącz do pokoju</button>
+    </div>    
+    
+    <div class="center-content">
+        <span id="roomDisplay">Pokój: </span>
+        <span id="playerDisplay">Gracz: </span>
+        <span id="remainingDraws">Pozostało kart do dobrania:</span>
+    </div>    
+
+    <div class="main-container">
+
+        <div class="sections-container">
+            <div id="currentPlayer" class="game-section"></div>
+            
+            <span class="section-label">Karty przeciwnika</span>
+            <div id="kartyPrzeciwnika" class="game-section"></div>
+            
+            <span class="section-label">Twoje karty na stole</span>
+            <div id="stol" class="game-section"></div>
+            
+            <span class="section-label">Twoje karty</span>
+            <div id="mojeKarty" class="game-section"></div>
+        </div>
+    </div>
+
+    <div class="right-buttons">
+        <span id="actionPointsDisplay">Punkty akcji: </span>
+        <button class="game-button" id="endTurnButton" onclick="zakonczTure()">Zakończ Turę</button>
+        <button class="game-button" id="attackButton" onclick="zaatakujKarte()">Atakuj</button>
+        <button class="game-button" id="specialAbilityButton" onclick="activateSpecialAbility()">Użyj umiejętności</button>
+        <button class="game-button" id="drawCardButton">Dobierz kartę</button>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
