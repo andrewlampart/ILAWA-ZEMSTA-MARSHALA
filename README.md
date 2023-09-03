@@ -1,5 +1,4 @@
 # IŁAWA ZEMSTA MARSHALA
-![Grafika z gry](link_do_grafiki_promocyjnej.jpg)
 
 Witaj w świecie **Iława Zemsta Marszała** - dynamicznej karcianki online, gdzie strategia i taktyka idą w parze z emocjonującą rozgrywką!
 
