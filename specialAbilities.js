@@ -195,11 +195,11 @@ function activate_special_ability(state, player, card_index, io, rooms, roomID) 
         
             // Drugi cwel
             const cwel2 = {
-                name: "Cwel",
+                name: "Anime dziewczynka",
                 attack: 1,
                 health: 1,
                 image: "img/cwel.jpg",  // Upewnij się, że masz odpowiedni obrazek dla Cwela
-                special: "Podwładny Kokosa"
+                special: "uWu"
             };
         
             // Dodajemy oba cwele na koniec planszy gracza

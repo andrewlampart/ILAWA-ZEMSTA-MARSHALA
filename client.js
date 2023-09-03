@@ -15,6 +15,14 @@ socket.on('updateGameState', function(data) {
     console.log("Aktualizacja stanu gry zakończona.");
 });
 
+socket.on('gameOver', function(data) {
+    if (playerID === data.winner) {
+        alert("Wygrałeś!");
+    } else if (playerID === data.loser) {
+        alert("Przegrałeś...");
+    }
+    location.reload();  // Przeładuj stronę, aby wrócić do początkowego stanu
+});
 
 socket.on('message', function(data) {
     alert(data);
