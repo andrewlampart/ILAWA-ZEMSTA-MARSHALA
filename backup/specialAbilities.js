@@ -195,11 +195,11 @@ function activate_special_ability(state, player, card_index, io, rooms, roomID) 
         
             // Drugi cwel
             const cwel2 = {
-                name: "Cwel",
+                name: "Anime dziewczynka",
                 attack: 1,
                 health: 1,
                 image: "img/cwel.jpg",  // Upewnij się, że masz odpowiedni obrazek dla Cwela
-                special: "Podwładny Kokosa"
+                special: "uWu"
             };
         
             // Dodajemy oba cwele na koniec planszy gracza
@@ -370,6 +370,113 @@ function activate_special_ability(state, player, card_index, io, rooms, roomID) 
                     opponentCard.health = 0;  // Ustawiamy zdrowie karty na 0, co oznacza, że zostanie usunięta
                 }
             }
+        }
+
+
+        else if (card.name === "Groks") {
+            const opponent = player === 'player1' ? 'player2' : 'player1';
+            // Jeśli przeciwnik ma karty na planszy
+            if (state.players[opponent].board.length > 0) {
+                // Wybierz losową kartę z planszy przeciwnika
+                const randomIndex = Math.floor(Math.random() * state.players[opponent].board.length);
+                const chosenCard = state.players[opponent].board[randomIndex];
+                
+                // Dodaj wybraną kartę do ręki przeciwnika
+                state.players[opponent].hand.push(chosenCard);
+        
+                // Usuń wybraną kartę z planszy przeciwnika
+                state.players[opponent].board.splice(randomIndex, 1);
+            }
+        }
+
+        else if (card.name === "Grabara") {
+            // Jeśli karta na planszy gracza to "Grabar", zwiększ zdrowie wszystkich kart na planszy gracza o 1
+            for (let playerCard of state.players[player].board) {
+                playerCard.health += 1;
+            }
+        }
+
+        else if (card.name === "Bombel") {
+            // Dla każdej karty na planszy gracza i przeciwnika losujemy statystyki
+            for (const playerCard of state.players[player].board) {
+                playerCard.attack = Math.floor(Math.random() * 7) + 1;  // Losuj wartość ataku od 1 do 7
+                playerCard.health = Math.floor(Math.random() * 7) + 1;  // Losuj wartość zdrowia od 1 do 7
+            }
+        
+            const opponent = player === 'player1' ? 'player2' : 'player1';
+            for (const opponentCard of state.players[opponent].board) {
+                opponentCard.attack = Math.floor(Math.random() * 7) + 1;  // Losuj wartość ataku od 1 do 7
+                opponentCard.health = Math.floor(Math.random() * 7) + 1;  // Losuj wartość zdrowia od 1 do 7
+            }
+        }
+
+        else if (card.name === "Zimny") {
+            // Dla każdej karty na planszy obu graczy
+            const allBoards = [state.players.player1.board, state.players.player2.board];
+            for (let board of allBoards) {
+                for (let boardCard of board) {
+                    if (boardCard.attack >= 8) {
+                        // Jeśli atak karty jest równy lub większy niż 8, obniżamy go o 5
+                        boardCard.attack -= 5;
+                        if (boardCard.attack < 0) {
+                            boardCard.attack = 0;  // Zapewnia, że atak nie spadnie poniżej 0
+                        }
+                    }
+                }
+            }
+        }
+
+        else if (card.name === "Japa") {
+            // Jeśli karta na planszy gracza to "Japa", przyzywamy jego kopię
+            const japaCopy = {
+                name: card.name,
+                attack: card.attack,   // Zachowuje statystyki oryginalnego Japa
+                health: card.health,   // Zachowuje statystyki oryginalnego Japa
+                image: card.image,     // Używa tego samego obrazka co oryginalny Japa
+                special: card.special  // Używa tego samego opisu specjalnej umiejętności
+            };
+            
+            // Dodajemy kopię Japa na końcu tablicy kart gracza na planszy
+            state.players[player].board.push(japaCopy);
+        }
+
+        else if (card.name === "Igor") {
+            // Dla każdej karty w ręce gracza dodajemy 1 punkt ataku
+            for (let handCard of state.players[player].hand) {
+                handCard.attack += 1;
+            }
+        }
+        
+        else if (card.name === "Damian") {
+            // Jeśli karta na planszy gracza to "Damian", dodajemy kartę "Pizza" do ręki gracza
+            const pizzaCard = {
+                name: "Pizza",
+                attack: 3,
+                health: 3,
+                image: "img/pizza.jpg",
+                special: "Smaczna pizza!"
+            };
+            
+            state.players[player].hand.push(pizzaCard);
+        }
+
+        else if (card.name === "Chechło") {
+            // Jeśli karta na planszy gracza to "Chechło", obniżamy atak wszystkim kartom w ręce przeciwnika o 1
+            const opponent = state.current_player === 'player1' ? 'player2' : 'player1';
+            state.players[opponent].hand.forEach(opponentCard => {
+                if (opponentCard.attack > 0) {  // Upewniamy się, że atak karty nie jest już na 0
+                    opponentCard.attack -= 1;
+                }
+            });
+        }
+
+        else if (card.name === "Docent") {
+            // Jeśli karta na planszy gracza to "Docent", zmniejszamy jego atak o 1 i zwiększamy zdrowie o 2
+            card.attack = Math.max(card.attack - 1, 0); // Upewniamy się, że atak nie jest niższy niż 0
+            card.health += 2;
+        
+            // Możesz także dodać logikę wyświetlania komunikatu dla gracza o zmianie statystyk karty
+            // na przykład: socket.emit('message', 'Znajdujesz kwasa w portfelu! Tracisz 1 ataku, ale zyskujesz 2 zdrowia!');
         }
         
         

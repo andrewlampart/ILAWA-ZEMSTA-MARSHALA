@@ -3,7 +3,6 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');  // Importowanie uuid do tworzenia pokoi
 const { activate_special_ability } = require('./specialAbilities');
 
 
@@ -14,6 +13,14 @@ const io = socketIo(httpServer);
 app.use(express.static(path.join(__dirname)));
 
 const cards = JSON.parse(fs.readFileSync("cards_info.json", "utf8"));
+
+const characterSet = '123456789ABCDEFGHJKMNPQRSTUVWXYZ';
+function generateUniqueId() {
+  return 'x'
+    .repeat(6)
+    .replace(/x/g, () => characterSet[Math.trunc(Math.random() * 32)]);
+}
+
 
 function draw_random_cards(cards_list, num_cards=10) {
     const drawn_cards = cards_list.sort(() => 0.5 - Math.random()).slice(0, num_cards);
@@ -123,20 +130,29 @@ function play_card(state, player, card_index, socket) {
     return true;
 }
 
-function checkForWinner(state) {
+function checkForWinner(state, roomID) {
     const player1 = state.players.player1;
     const player2 = state.players.player2;
 
     if (player1.hand.length === 0 && player1.board.length === 0 && state.unused_cards.length === 0) {
-        return 'player2';  // Player 2 wygrywa, jeśli Player 1 nie ma kart
+        io.to(roomID).emit('gameOver', { winner: 'player2', loser: 'player1' });
+        resetRoom(roomID);
+        return 'player2';
     }
 
     if (player2.hand.length === 0 && player2.board.length === 0 && state.unused_cards.length === 0) {
-        return 'player1';  // Player 1 wygrywa, jeśli Player 2 nie ma kart
+        io.to(roomID).emit('gameOver', { winner: 'player1', loser: 'player2' });
+        resetRoom(roomID);
+        return 'player1';
     }
 
-    return null;  // Jeszcze nie ma zwycięzcy
+    return null;
 }
+
+function resetRoom(roomID) {
+    delete rooms[roomID];
+}
+
 
 
 function attack_card(state, player, attacker_index, defender_index, roomID, socket) {
@@ -204,7 +220,11 @@ io.on('connection', function(socket) {
     });
     
     socket.on('createRoom', function() {
-        const roomID = uuidv4();
+        let roomID;
+        do {
+            roomID = generateUniqueId();
+        } while (rooms[roomID]);
+    
         rooms[roomID] = {
             players: [],
             gameState: null,
