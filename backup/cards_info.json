@@ -4,7 +4,7 @@
     {"name": "MC", "attack": 4, "health": 8, "image": "img/mc.jpg", "special": "Jedzie na woodstock i zabiera 3 inne losowe karty ze sobą. Mc też jedzie jak coś."},
     {"name": "Cycu", "attack": 6, "health": 6, "image": "img/cycu.png", "special": "Zbija tłoka losowemu przeciwnikowi i obniża mu atak do 0"},
     {"name": "Kali", "attack": 6, "health": 6, "image": "img/kali.jpg", "special": "Je snickersa (dodaje sobie do statystyk +2 ataku i +2 zdrowia)"},
-    {"name": "Galik", "attack": 4, "health": 2, "image": "img/galik.jpg", "special": "Kręci jointa z holendra i upala wszystkich i zmienia im atak na 0"},
+    {"name": "Galik", "attack": 4, "health": 2, "image": "img/galik.jpg", "special": "Kręci jointa z holendra i upala WSZYSTKICH zmniejszając atak o 1"},
     {"name": "Kazik", "attack": 7, "health": 6, "image": "img/kazik.jpg", "special": "Sika w spodnie (nic się nie dzieje)"},
     {"name": "Siara", "attack": 6, "health": 5, "image": "img/siara.jpg", "special": "Polej drinki 3 losowym przeciwnikom i zadaj im 1 pkt obrażeń"},
     {"name": "Przemek", "attack": 4, "health": 6, "image": "img/rucki.jpg", "special": "Przeparkuj Audi"},
@@ -29,12 +29,12 @@
     {"name": "Groks", "attack": 4, "health": 4, "image": "img/groks.jpeg", "special": "Cofnij losową kartę przeciwnika do jego ręki"},
     {"name": "Gabi", "attack": 3, "health": 7, "image": "img/gabi.jpg", "special": "Szalony pigularz! Daj dwóm losowym ziomkom +2/+2!"},
     {"name": "Japa", "attack": 1, "health": 1, "image": "img/japa.jpg", "special": "Przyzywa swoją kopie."},
-    {"name": "Chechło", "attack": 5, "health": 7, "image": "img/chechlo.png", "special": "XXXXXXXX"},
+    {"name": "Chechło", "attack": 5, "health": 7, "image": "img/chechlo.png", "special": "Dobry traczek. Obniżams atak wszystkim kartom w ręce przeciwnika o 1"},
     {"name": "Igor", "attack": 5, "health": 4, "image": "img/igor.jpg", "special": "Jedziecie na garaż. Daj wszystkim kartom w ręcie 1 ataku."},
     {"name": "Suchy", "attack": 6, "health": 4, "image": "img/suchy.jpg", "special": "Próg podatkowy. Wszystkie postacie ze zdrowiem 1 lub mniej giną."},
     {"name": "Krępa", "attack": 3, "health": 6, "image": "img/krępa.jpg", "special": "Ogłupia wszystkich przeciwników i zadaje im 1 obrażeń"},
     {"name": "Bombel", "attack": 3, "health": 6, "image": "img/bombel.jpg", "special": "Robi dymy! Losuje WSZYSTKIM statystyki od 1 do 7"},
-    {"name": "Docent", "attack": 6, "health": 4, "image": "img/bombel.docent.jpg", "special": ""},
+    {"name": "Docent", "attack": 6, "health": 4, "image": "img/bombel.docent.jpg", "special": "Znajduje kwasa w portfelu. Traci 1 ataku za to zyskuje 2 zdrowia."},
     {"name": "Damian", "attack": 5, "health": 5, "image": "img/damian.jpg", "special": "Rozwozi w Donie. Zapodaje ci pizzę do ręki."}
   ]
     

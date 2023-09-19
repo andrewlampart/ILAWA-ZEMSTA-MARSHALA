@@ -1,4 +1,4 @@
-const socket = io('http://83.6.0.208:3000');
+const socket = io('http://79.191.232.249:3000');
 let playerID = null; // zamiast let player_id = '';
 let roomID = null;
 let selectedCardIndex = null;  // Index of the selected player card

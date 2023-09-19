@@ -1,14 +1,16 @@
-const socket = io('http://83.6.0.208:3000');
-let playerID = null;
+const socket = io('http://79.191.232.249:3000');
+let playerID = null; // zamiast let player_id = '';
 let roomID = null;
-let selectedCardIndex = null;  
-let selectedOpponentCardIndex = null;  
+let selectedCardIndex = null;  // Index of the selected player card
+let selectedOpponentCardIndex = null;  // Index of the selected opponent card
 let myTurn = false;
 
+document.getElementById("backgroundMusic").play();
+document.getElementById("backgroundMusic").volume = 0.2; // 20% głośności
 
 socket.on('updateGameState', function(data) {
     console.log("Otrzymano aktualizację stanu gry z serwera:", data);
-    myTurn = data.current_player === playerID;  
+    myTurn = data.current_player === playerID;  // Poprawka tutaj
     console.log("Uruchamiam funkcję aktualizujStanGry.");
     console.log("Otrzymano aktualizację stanu gry z serwera.");
     aktualizujStanGry(data);
@@ -21,7 +23,7 @@ socket.on('gameOver', function(data) {
     } else if (playerID === data.loser) {
         alert("Przegrałeś...");
     }
-    location.reload();  
+    location.reload();  // Przeładuj stronę, aby wrócić do początkowego stanu
 });
 
 socket.on('message', function(data) {
@@ -36,31 +38,6 @@ function joinRoom(id) {
     console.log("Wywołano funkcję joinRoom z ID:", id);
     console.log("Emitting joinRoom event with roomID:", id);
     socket.emit('joinRoom', { roomID: id });
-}
-
-function setNicknameAndJoinOrCreateRoom() {
-    const roomIdInput = document.getElementById('roomIdInput');
-    const roomId = roomIdInput.value;
-    const nicknameInput = document.getElementById('nicknameInput');
-    const nickname = nicknameInput.value;
-    if (roomId) {
-        socket.emit('joinRoom', { roomID: roomId, nickname: nickname });
-    } else if (nickname) {
-        socket.emit('createRoom', { nickname: nickname });  // Zmienione tutaj
-    } else {
-        alert('Podaj nazwę użytkownika i/lub ID pokoju!');
-    }
-}
-
-function setNickname() {
-    const nickname = document.getElementById("nicknameInput").value;
-    if (nickname) {
-        window.playerNickname = nickname;
-        console.log(`Ustawiono nazwę użytkownika na: ${nickname}`); 
-        alert(`Twój nick został ustawiony na: ${nickname}`);
-    } else {
-        alert("Proszę wprowadzić nick!");
-    }
 }
 
 function zagrajKarte(indexKarty) {
@@ -96,7 +73,7 @@ function activateSpecialAbility() {
 
 function zakonczTure() {
     console.log("Funkcja 'zakonczTure' została wywołana.");
-    if (!myTurn || !roomID) return; 
+    if (!myTurn || !roomID) return; // Jeśli to nie twoja tura lub roomID jest null, nie rób nic
     console.log(`Wysyłanie żądania zakończenia tury z roomID: ${roomID}`);
     socket.emit('zakonczTure', { player: playerID, roomID: roomID });
 }
@@ -165,8 +142,7 @@ function aktualizujStanGry(gameState) {
     
     const currentPlayerDiv = document.getElementById('currentPlayer');
     if (currentPlayerDiv) {
-        const currentNickname = gameState.current_player === playerID ? window.playerNickname : "Przeciwnik";
-        currentPlayerDiv.textContent = `Tura gracza: ${currentNickname}`;
+        currentPlayerDiv.textContent = `Tura gracza: ${gameState.current_player}`;        
     }
 
     const roomDisplayElement = document.getElementById('roomDisplay');
@@ -178,25 +154,6 @@ function aktualizujStanGry(gameState) {
     if (playerDisplayElement) {
         playerDisplayElement.textContent = `Gracz: ${playerID}`;
     }
-
-    const combatLogDiv = document.getElementById('combatLog');
-    if (combatLogDiv) {
-        while (combatLogDiv.firstChild) {
-            combatLogDiv.removeChild(combatLogDiv.firstChild);
-        }
-        gameState.combat_log.forEach(entry => {
-            const logEntry = document.createElement('div');
-            logEntry.textContent = entry;
-            combatLogDiv.appendChild(logEntry);
-        });
-    }
-
-    const currentPlayerDisplay = document.getElementById('currentPlayer');
-    if (currentPlayerDisplay) {
-        const currentNickname = gameState.current_player === playerID ? window.playerNickname : "Przeciwnik";
-        currentPlayerDisplay.textContent = `Tura gracza: ${currentNickname}`;
-    }
-
 
     console.log("ID gracza:", playerID);
     console.log("Odebrano stan gry z serwera:", gameState);

@@ -302,38 +302,3 @@ input[type="text"] {
     display: block; /* Zapewnia, że każdy element jest wyświetlany jako blok */
     background-color: #fff;
 }
-
-.left-buttons {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start; /* Align to the start to be on the left side */
-    position: fixed; /* Fixed position to stay in place */
-    left: 45px; /* Position it 45px from the left */
-    top: 50%; /* Vertically center it */
-    gap: 20px;
-    background-color: rgba(255, 255, 255, 0.26);
-    border-radius: 10px;
-    padding: 10px;
-    width: 230px; /* Set a width for the log */
-    height: 400px; /* Set a height for the log */
-    overflow-y: auto; /* Make it scrollable */
-}
-
-#combatLog {
-    width: 100%; /* Take up the full width of the container */
-    height: 100%; /* Take up the full height of the container */
-    overflow-y: auto; /* Make the log itself scrollable */
-    background-color: rgba(255, 255, 255, 0.363);
-    border: 1px solid #dddddd4d; /* Border for the log */
-    padding: 10px; /* Padding inside the log */
-    box-sizing: border-box; /* Make sure padding doesn't increase the size */
-    font-size: 1em; /* Increased font size for the log messages */
-    font-weight: bold; /* Make the log messages bold */
-}
-
-label {
-    font-weight: bold;
-    margin-right: 10px;
-    display: inline-block;
-}

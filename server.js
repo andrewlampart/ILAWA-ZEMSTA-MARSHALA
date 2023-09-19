@@ -16,36 +16,11 @@ const cards = JSON.parse(fs.readFileSync("cards_info.json", "utf8"));
 
 const characterSet = '123456789ABCDEFGHJKMNPQRSTUVWXYZ';
 function generateUniqueId() {
-    return 'x'
-        .repeat(6)
-        .replace(/x/g, () => characterSet[Math.trunc(Math.random() * 32)]);
+  return 'x'
+    .repeat(6)
+    .replace(/x/g, () => characterSet[Math.trunc(Math.random() * 32)]);
 }
 
-function getNicknameByPlayerID(playerID, roomID) {
-    console.log(`Wywołanie getNicknameByPlayerID z playerID: ${playerID} i roomID: ${roomID}`);
-    if (!rooms[roomID]) {
-        console.log(`Nie znaleziono pokoju o ID: ${roomID} dla gracza ${playerID}`);
-        console.error(`Nie znaleziono pokoju o ID: ${roomID}`);
-        return "Nieznany Gracz";
-    }
-
-    const playerData = rooms[roomID].players.find(p => p.playerId === playerID);
-    const playerSocketId = playerData ? playerData.socketId : null;
-    
-    if (!playerData) {
-        console.log(`Nie znaleziono danych dla gracza o ID: ${playerID} w pokoju o ID: ${roomID}`);
-        return "Nieznany Gracz";
-    }
-
-    const nickname = rooms[roomID].nicknames[playerSocketId];
-    if (!nickname) {
-        console.log(`Nie znaleziono pseudonimu dla socketId: ${playerSocketId} w pokoju o ID: ${roomID}`);
-        return "Nieznany Gracz";
-    }
-
-    console.log(`Pobrano pseudonim: ${nickname} dla gracza ${playerID} w pokoju ${roomID}`);
-    return nickname;
-}
 
 function draw_random_cards(cards_list, num_cards=10) {
     const drawn_cards = cards_list.sort(() => 0.5 - Math.random()).slice(0, num_cards);
@@ -54,7 +29,7 @@ function draw_random_cards(cards_list, num_cards=10) {
 
 
 function draw_card(state, player, roomID, room) {
-    let result = { success: true, message: "" }; 
+    let result = { success: true, message: "" };  // Inicjalizacja zmiennej wynikowej
 
     if (state.players[player].action_points < 1) {
         return { success: false, message: "Nie masz wystarczającej liczby punktów akcji do dobierania karty." };
@@ -71,7 +46,6 @@ function draw_card(state, player, roomID, room) {
     }
 
     state.players[player].hand.push(drawn_card);
-    state.combat_log.push(`${getNicknameByPlayerID(player, roomID)} dobrał kartę ${drawn_card.name}`);
     state.players[player].action_points -= 1;
     state.unused_cards = state.unused_cards.filter(card => card.name !== drawn_card.name);
     state.players[player].drawCount += 1;
@@ -90,14 +64,14 @@ function draw_card(state, player, roomID, room) {
         socket.emit('error', result.message);
     }
 
-    return result; 
+    return result;  // Zwróć wynik
 }
 
 
 function initialize_game_state_with_replacement() {
     const deepCopy = (arr) => arr.map(item => Object.assign({}, item));
     
-    let remaining_cards = [...cards]; 
+    let remaining_cards = [...cards]; // Tworzenie kopii listy kart
 
     // Draw 10 random cards for player 1
     let player1_cards = draw_random_cards(remaining_cards, 10);
@@ -127,15 +101,14 @@ function initialize_game_state_with_replacement() {
             }
         },
         "current_player": "player1",
-        "unused_cards": remaining_cards, 
+        "unused_cards": remaining_cards,  // Updated line to use the remaining cards
         "drawCount": 0,  
-        "remainingDraws": 10,
-        "combat_log": []
+        "remainingDraws": 10  
     };
 }
 
 
-function play_card(state, player, card_index, roomID, socket) {
+function play_card(state, player, card_index, socket) {
     console.log(`Próba zagrania karty przez ${player} z indeksem ${card_index}`);
     if (state.current_player !== player) {
         console.log(`Błąd: ${player} nie jest aktualnym graczem.`);
@@ -152,7 +125,6 @@ function play_card(state, player, card_index, roomID, socket) {
     }
 
     const card = state.players[player].hand.splice(card_index, 1)[0];
-    state.combat_log.push(`${getNicknameByPlayerID(player, roomID)} zagrał kartę ${card.name}`);
     state.players[player].board.push(card);
     state.players[player].action_points -= 1;
     return true;
@@ -199,9 +171,6 @@ function attack_card(state, player, attacker_index, defender_index, roomID, sock
 
     const attacker = state.players[player].board[attacker_index];
 
-    state.combat_log.push(`${getNicknameByPlayerID(player, roomID)} zaatakował kartą ${attacker.name} kartę ${defender.name}`);
-
-
     defender.health -= attacker.attack;
     attacker.health -= defender.attack;
 
@@ -225,21 +194,18 @@ function attack_card(state, player, attacker_index, defender_index, roomID, sock
 
 
 
-function end_turn(state, player, roomID) {
-    console.log(`Próba zakończenia tury przez gracza ${player}`); 
+function end_turn(state, player) {
+    console.log(`Próba zakończenia tury przez gracza ${player}`); // Dodaj tę linię
     if (state.current_player !== player) {
         return false;
     }
     const next_player = player === 'player1' ? 'player2' : 'player1';
     state.current_player = next_player;
-    state.players[next_player].action_points = 2;  
+    state.players[next_player].action_points = 2;  // Reset action points for the next player
     const szczepanCard = state.players[player].board.find(card => card.name === "Szczepan");
     if (szczepanCard && szczepanCard.baseAttack !== undefined) {
         szczepanCard.attack = szczepanCard.baseAttack;
     }
-
-    state.combat_log.push(`Teraz tura gracza ${getNicknameByPlayerID(next_player, roomID)}`);
-
     return true;
 }
 
@@ -253,8 +219,7 @@ io.on('connection', function(socket) {
         console.error(`Błąd dla socketu o ID ${socket.id}:`, err);
     });
     
-    socket.on('createRoom', function(nickname) {  
-        console.log(`Gracz o pseudonimie ${nickname} próbuje utworzyć nowy pokój`);
+    socket.on('createRoom', function() {
         let roomID;
         do {
             roomID = generateUniqueId();
@@ -262,11 +227,9 @@ io.on('connection', function(socket) {
     
         rooms[roomID] = {
             players: [],
-            nicknames: {},
             gameState: null,
             gameStarted: false
         };
-        rooms[roomID].nicknames[socket.id] = nickname;
         socket.join(roomID);
         const playerID = 'player' + (rooms[roomID].players.length + 1);
         rooms[roomID].players.push({ socketId: socket.id, playerId: playerID });
@@ -279,21 +242,20 @@ io.on('connection', function(socket) {
     });
     
 
-    socket.on('joinRoom', function({ roomID, nickname }) { 
-        console.log(`Gracz o pseudonimie ${nickname} próbuje dołączyć do pokoju o ID: ${roomID}`);
+    socket.on('joinRoom', function({ roomID }) { 
+        // ... istniejący kod ...
     
         if (rooms[roomID] && rooms[roomID].players.length < 2) {
             const playerID = 'player' + (rooms[roomID].players.length + 1);
             socket.join(roomID);
-            rooms[roomID].nicknames[socket.id] = nickname;  
             rooms[roomID].players.push({ socketId: socket.id, playerId: playerID }); 
             console.log("Aktualna struktura pokoi:", rooms);
             socket.emit('playerID', playerID);
             console.log(`Gracz ${playerID} dołączył do pokoju ${roomID}`);
     
-            socket.emit('joinedRoom', roomID);
+            socket.emit('joinedRoom', roomID);  // <- Dodaj tę linię
     
-            if (rooms[roomID].players.length === 2 && !rooms[roomID].gameStarted) {
+            if (rooms[roomID].players.length === 2) {
                 rooms[roomID].gameState = initialize_game_state_with_replacement();
                 rooms[roomID].gameStarted = true;
             }
@@ -314,7 +276,7 @@ io.on('connection', function(socket) {
     socket.on('zagrajKarte', function(data) {
         const room = rooms[data.roomID];
         if (room && room.gameState) {
-            if (play_card(room.gameState, data.player, data.card_index, data.roomID, socket)) {
+            if (play_card(room.gameState, data.player, data.card_index, socket)) {
                 io.to(data.roomID).emit('updateGameState', room.gameState);
             } else {
                 console.log(`Nieudana próba zagrania karty przez gracza: ${data.player} w pokoju: ${data.roomID}`);
@@ -339,17 +301,17 @@ io.on('connection', function(socket) {
     socket.on('activateSpecialAbility', function(data) {
         const room = rooms[data.roomID];
         if (room && room.gameState) {
-            if (activate_special_ability(data.card_index, data.card, data.player, room.gameState, data.roomID, getNicknameByPlayerID)) {
+            if (activate_special_ability(room.gameState, data.player, data.card_index)) {
                 io.to(data.roomID).emit('updateGameState', room.gameState);
             }
         }
     });
 
     socket.on('zakonczTure', function(data) {
-        console.log(`Otrzymano żądanie zakończenia tury od gracza ${data.player} w pokoju ${data.roomID}`); 
+        console.log(`Otrzymano żądanie zakończenia tury od gracza ${data.player} w pokoju ${data.roomID}`); // Dodaj tę linię
         const room = rooms[data.roomID];
         if (room && room.gameState) {
-            if (end_turn(room.gameState, data.player, data.roomID)) {
+            if (end_turn(room.gameState, data.player)) {
                 io.to(data.roomID).emit('updateGameState', room.gameState);
             }
         }
@@ -359,7 +321,7 @@ io.on('connection', function(socket) {
         const room = rooms[roomID];
         if (room && room.gameState) {
             const currentPlayer = room.gameState.current_player;
-            const result = draw_card(room.gameState, currentPlayer, roomID, room); 
+            const result = draw_card(room.gameState, currentPlayer, roomID, room); // Dodaj "room" jako argument
                         if (result.success) {
                 io.to(roomID).emit('updateGameState', room.gameState);
             } else {

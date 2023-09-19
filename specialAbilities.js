@@ -1,4 +1,4 @@
-function activate_special_ability(card_index, card, player, state, roomID, getNicknameByPlayerID) {
+function activate_special_ability(state, player, card_index, io, rooms, roomID) {
 
     const cards = require('./cards_info.json');
 
@@ -8,7 +8,6 @@ function activate_special_ability(card_index, card, player, state, roomID, getNi
     // Ensure the card exists in the player's board
     if (card_index >= 0 && card_index < state.players[player].board.length) {
         const card = state.players[player].board[card_index];
-        state.combat_log.push(`${getNicknameByPlayerID(player, roomID)} aktywował specjalną zdolność karty ${card.name}`);
         // Check if the card is "MC"
         if (card.name === "MC") {
             // Collect all cards from both players on the board
@@ -75,7 +74,7 @@ function activate_special_ability(card_index, card, player, state, roomID, getNi
             const allCards = state.players[player].board.concat(state.players[state.current_player === 'player1' ? 'player2' : 'player1'].board);
             // Set attack of all cards to 0
             for (let card of allCards) {
-                card.attack = 0;
+                card.attack -= 1;
             }
         }
 
@@ -264,8 +263,8 @@ function activate_special_ability(card_index, card, player, state, roomID, getNi
         else if (card.name === "Karol Synowiec") {
             const opponent = state.current_player === 'player1' ? 'player2' : 'player1';
             
-            // Sprawdzamy, czy przeciwnik ma karty na planszy
-            if (state.players[opponent].board.length > 0) {
+            // Sprawdzamy, czy przeciwnik ma karty na planszy i czy ma 2 punkty akcji
+            if (state.players[opponent].board.length > 0 && state.players[opponent].action_points >= 2) {
                 // Jeśli tak, wybieramy losową kartę
                 const randomIndex = Math.floor(Math.random() * state.players[opponent].board.length);
                 const stolenCard = state.players[opponent].board.splice(randomIndex, 1)[0];
@@ -275,6 +274,13 @@ function activate_special_ability(card_index, card, player, state, roomID, getNi
                 
                 // Odejmujemy dodatkowy 1 punkt akcji od gracza
                 state.players[player].action_points -= 1;
+                //jeśli nie ma kart na planszy przeciwnika
+            } else if (state.players[opponent].board.length === 0) {
+                //daj komunikat graczowi że nie ma 2 punktów akcji i nic się nie dzieje
+                io.to(rooms[roomID].player1).emit('message', 'Nie masz 2 punktów akcji!');
+            } else {
+                //daj komunikat graczowi że nie ma kart na planszy przeciwnika i nic się nie dzieje
+                io.to(rooms[roomID].player1).emit('message', 'Przeciwnik nie ma kart na planszy!');
             }
         }
         

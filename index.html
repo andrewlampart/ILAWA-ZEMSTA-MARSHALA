@@ -9,14 +9,13 @@
 <body>
     <div id="title">IŁAWA: ZEMSTA MARSHALA</div>
 
+    <audio id="backgroundMusic" src="background_music.mp3" loop></audio>
+
     <div class="center-content flex-column">
-        <label for="nicknameInput">Twój nick:</label>
-        <input type="text" id="nicknameInput" placeholder="Wprowadź swój nick">
-        <button onclick="setNickname()">Ustaw Nick</button>
         <button onclick="createRoom()">Utwórz pokój</button>
         <input type="text" id="roomInput" placeholder="Wprowadź ID pokoju">
         <button onclick="joinRoom(document.getElementById('roomInput').value)">Dołącz do pokoju</button>
-    </div>   
+    </div>    
     
     <div class="center-content">
         <span id="roomDisplay">Pokój: </span>
@@ -37,12 +36,6 @@
             
             <span class="section-label">Twoje karty</span>
             <div id="mojeKarty" class="game-section"></div>
-        </div>
-    </div>
-
-    <div class="left-buttons">
-        <div id="combatLog">
-            <!-- Combat messages will be appended here -->
         </div>
     </div>
 
